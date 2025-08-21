@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
 library(janitor)
+library(reprex)
 ```
 
 Your job is to identify an error, then make a reproducible example that would help future you or someone else understand how to write the code correctly. In other words, your reprex code will *work* and offer a solution to the error thrown in each of the following examples. 
@@ -29,7 +30,7 @@ mack_creek_vertebrates <- read_csv(here("AS00601.csv"))
 
 ### reprex 1
 
-Identify what is causing the problem in the code below (there's only one thing). Then, create a very simple reprex that would help yourself, future you, or a colleague fix the problem. **Post your reprex as an issue in your own fork on GitHub.**
+Identify what is causing the problem in the code below (there's only one thing). Then, create a very simple reprex that would help yourself, future you, or a colleague fix the problem. **Post your reprex as an issue in your own fork on GitHub.** (mutate(across(where(is.character), tolower)) %>%)
 
 ```{r}
 # Example 1: 
@@ -37,7 +38,7 @@ mack_creek_lengths <- mack_creek_vertebrates %>%
   clean_names() %>% 
   select(year:sampledate) %>% 
   filter(section == "CC") %>% 
-  mutate(across(where(is.character, tolower))) %>% 
+  mutate(across(where(is.character, tolower))) %>%  
   drop_na(species) %>% 
   group_by(species) %>% 
   summarize(mean_length_cm = mean(length1, na.rm = TRUE),
@@ -45,9 +46,25 @@ mack_creek_lengths <- mack_creek_vertebrates %>%
   ungroup()
 ```
 
+``` {reprex}
+mack_creek_lengths <- mack_creek_vertebrates %>% 
+  clean_names() %>% 
+  select(year:sampledate) %>% 
+  filter(section == "CC") %>% 
+  mutate(across(where(is.character, tolower))) %>%  
+  drop_na(species) %>% 
+  group_by(species) %>% 
+  summarize(mean_length_cm = mean(length1, na.rm = TRUE),
+            sd_length_cm = sd(length1, na.rm = TRUE)) %>% 
+  ungroup()
+#> Error in mack_creek_vertebrates %>% clean_names() %>% select(year:sampledate) %>% : could not find function "%>%"
+```
+
+<sup>Created on 2025-08-21 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
 ### reprex 2
 
 Identify what is causing the problem in the code below (there's only one thing). Then, create a very simple reprex that would help yourself, future you, or a colleague fix the problem. **Post your reprex as an issue in your own fork on GitHub.**
+(geom_point(shape = 12, color = "purple"))
 
 ```{r}
 # Example 2:
@@ -61,4 +78,17 @@ mack_creek_vertebrates %>%
               y = "Weight (g)")
 ```
 
+``` {reprex}
+mack_creek_vertebrates %>% 
+  clean_names() %>% 
+  filter(species == "ONCL") %>% 
+  ggplot(aes(x = length1, y = weight)) +
+         geom_point(aes(shape = 12), color = "purple") +
+         theme_minimal() +
+         labs(x = "Cutthroat trout length (cm)",
+              y = "Weight (g)")
+#> Error in mack_creek_vertebrates %>% clean_names() %>% filter(species == : could not find function "%>%"
+```
+
+<sup>Created on 2025-08-21 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
 ## End
